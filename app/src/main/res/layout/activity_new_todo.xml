@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <EditText
+        android:id="@+id/edit_new_todo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_height"
+        android:hint="@string/org_hint_todoItem"
+        android:textSize="@dimen/add_hint_text"
+        android:layout_margin="@dimen/small_padding"/>
+    
+    <Button
+        android:id="@+id/save_todo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/org_save_todo"
+        android:layout_margin="@dimen/small_padding"
+        android:layout_gravity="right"
+        style="@style/Widget.MaterialComponents.Button"/>
+
+
+
+
+</LinearLayout>
