@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+
 import java.util.List;
 
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoViewHolder> {
@@ -17,11 +19,9 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     class TodoViewHolder extends RecyclerView.ViewHolder {
         private TextView todoItemText;
         private CheckBox todoItemCheck;
-        private com.google.android.material.card.MaterialCardView todoItemCard;
 
         private TodoViewHolder(View itemView) {
             super(itemView);
-            todoItemCard = itemView.findViewById(R.id.org_todo_item);
             todoItemText = itemView.findViewById(R.id.org_item_text);
             todoItemCheck = itemView.findViewById(R.id.org_checkbox);
         }
