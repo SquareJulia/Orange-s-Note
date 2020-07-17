@@ -20,8 +20,8 @@ public interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Todo todo);
 
-    @Delete
-    void delete(Todo todo);
+    @Query("DELETE FROM todo_table WHERE todo_item = :todoItem ")
+    void delete(String todoItem);
 
     @Query("DELETE FROM todo_table")
     void deleteAll();

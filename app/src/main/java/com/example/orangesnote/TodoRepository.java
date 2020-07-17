@@ -29,9 +29,9 @@ class TodoRepository {
         });
     }
 
-    void delete(Todo todo) {
+    void delete(String todoItem) {
         TodoRoomDatabase.databaseWriteExecutor.execute(()->{
-            mTodoDao.delete(todo);
+            mTodoDao.delete(todoItem);
         });
     }
 }

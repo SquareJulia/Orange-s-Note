@@ -12,6 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * 这个用不了
+ */
 public class NewTodoActivity extends AppCompatActivity {
     private EditText editNewTodo;
     private Button saveNewTodo;
@@ -22,7 +25,7 @@ public class NewTodoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_todo);
         editNewTodo = (EditText)findViewById(R.id.edit_new_todo);
         saveNewTodo = (Button)findViewById(R.id.save_todo_button);
-        /**
+
         saveNewTodo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,6 +40,5 @@ public class NewTodoActivity extends AppCompatActivity {
                 finish();
             }
         });
-         **/
     }
 }

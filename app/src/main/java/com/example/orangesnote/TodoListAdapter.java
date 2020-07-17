@@ -66,11 +66,23 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         notifyDataSetChanged();
     }
 
+    /**
+     * 通过接口从数据库删除一项
+     * @param todoItem
+     */
+    private void daoDelete(String todoItem){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getDao().delete(todoItem);
+            }
+        }).start();
 
+    }
 
     @Override
     public void onItemDismiss(int position) {
-        
+        daoDelete(mTodos.get(position).getTodoItem());
         mTodos.remove(position);
         notifyItemRemoved(position);
     }

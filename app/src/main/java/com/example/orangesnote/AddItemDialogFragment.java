@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,15 +55,23 @@ public class AddItemDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.org_save_todo, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                TodoDao dao = TodoRoomDatabase.getDatabase(getActivity()).todoDao();
-                                Todo todo=new Todo(editText.getText().toString(),false);
-                                dao.insert(todo);
-                            }
-                        }).start();
-                        listener.onDialogPositiveClick(AddItemDialogFragment.this);
+                        String todoItem = editText.getText().toString();
+                        if(TextUtils.isEmpty(todoItem)){
+                            listener.onDialogNegativeClick(AddItemDialogFragment.this);
+                            AddItemDialogFragment.this.getDialog().cancel();
+                        }
+                        else{
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TodoDao dao = TodoRoomDatabase.getDatabase(getActivity()).todoDao();
+                                    Todo todo=new Todo(editText.getText().toString(),false);
+                                    dao.insert(todo);
+                                }
+                            }).start();
+                            listener.onDialogPositiveClick(AddItemDialogFragment.this);
+                        }
+
                     }
                 })
                 .setNegativeButton(R.string.org_cancel_todo, new DialogInterface.OnClickListener() {
