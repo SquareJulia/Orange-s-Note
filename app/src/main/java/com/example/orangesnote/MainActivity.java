@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,17 +15,22 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.orangesnote.helper.OnStartDragListener;
+import com.example.orangesnote.helper.mItemTouchHelperCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AddItemDialogFragment.NoticeDialogListener{
+public class MainActivity extends AppCompatActivity
+        implements View.OnClickListener, AddItemDialogFragment.NoticeDialogListener, OnStartDragListener {
 
     private RecyclerView recyclerView;
     private TodoListAdapter adapter;
     private TodoViewModel todoViewModel;
+    private TodoDao dao;
     private FloatingActionButton fab;
     private DialogFragment mDialog;
+    private ItemTouchHelper itemTouchHelper;
 
     public static final int NEW_TODO_ACTIVITY_REQUEST_CODE = 1;
 
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                TodoDao dao = TodoRoomDatabase.getDatabase(getApplicationContext()).todoDao();
+                dao = TodoRoomDatabase.getDatabase(getApplicationContext()).todoDao();
                 Todo todo = new Todo("侧滑删除", false);
                 Todo todo1 = new Todo("拖动排序", false);
                 Todo todo2 = new Todo("点小加号增添任务项", false);
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(List<Todo> todos) {
                 adapter.setTodos(todos);
             }
+
         });
     }
 
@@ -59,16 +66,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         //init recyclerview
         recyclerView = findViewById(R.id.org_recycler_view);
         adapter = new TodoListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ItemTouchHelper.Callback callback = new mItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         //init fab
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(this);
     }
 
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        itemTouchHelper.startDrag(viewHolder);
+    }
+
+    /**失败了
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -81,12 +100,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+     **/
+
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab:
                 showAddItemDialog();
+                break;
         }
     }
 

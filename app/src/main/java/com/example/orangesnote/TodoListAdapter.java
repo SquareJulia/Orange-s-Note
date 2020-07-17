@@ -10,11 +10,17 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.orangesnote.helper.ItemTouchHelperAdapter;
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.Collections;
 import java.util.List;
 
-public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoViewHolder> {
+public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoViewHolder>
+        implements ItemTouchHelperAdapter {
+
+    private final LayoutInflater mInflater;
+    private List<Todo> mTodos;
 
     class TodoViewHolder extends RecyclerView.ViewHolder {
         private TextView todoItemText;
@@ -27,8 +33,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         }
     }
 
-    private final LayoutInflater mInflater;
-    private List<Todo> mTodos;
+
 
     TodoListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -59,6 +64,30 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     void setTodos(List<Todo> todos) {
         mTodos = todos;
         notifyDataSetChanged();
+    }
+
+
+
+    @Override
+    public void onItemDismiss(int position) {
+        
+        mTodos.remove(position);
+        notifyItemRemoved(position);
+    }
+
+
+    @Override
+    public  void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mTodos, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mTodos, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
     }
 
 
