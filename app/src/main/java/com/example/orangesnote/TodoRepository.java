@@ -28,4 +28,10 @@ class TodoRepository {
             mTodoDao.insert(todo);
         });
     }
+
+    void delete(Todo todo) {
+        TodoRoomDatabase.databaseWriteExecutor.execute(()->{
+            mTodoDao.delete(todo);
+        });
+    }
 }

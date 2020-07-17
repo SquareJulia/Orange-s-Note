@@ -26,9 +26,6 @@ public interface TodoDao {
     @Query("DELETE FROM todo_table")
     void deleteAll();
 
-    @Query("SELECT * from todo_table ORDER BY todo_item ASC")
-    LiveData<List<Todo>> getAlphabetizedTodos();
-
     @Query("DELETE FROM todo_table WHERE is_done LIKE :isDone")
     void deleteAllDones(Boolean isDone);
 

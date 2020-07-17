@@ -20,8 +20,9 @@ public class NewTodoActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
         setContentView(R.layout.activity_new_todo);
-        editNewTodo = findViewById(R.id.edit_new_todo);
-        saveNewTodo = findViewById(R.id.save_todo_button);
+        editNewTodo = (EditText)findViewById(R.id.edit_new_todo);
+        saveNewTodo = (Button)findViewById(R.id.save_todo_button);
+        /**
         saveNewTodo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,5 +37,6 @@ public class NewTodoActivity extends AppCompatActivity {
                 finish();
             }
         });
+         **/
     }
 }

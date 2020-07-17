@@ -25,4 +25,6 @@ public class TodoViewModel extends AndroidViewModel {
     public void insert(Todo todo) {
         mRepository.insert(todo);
     }
+
+    public void delete(Todo todo) { mRepository.delete(todo);}
 }

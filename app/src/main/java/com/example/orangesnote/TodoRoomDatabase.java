@@ -38,15 +38,7 @@ public abstract class TodoRoomDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            TodoDao dao = INSTANCE.todoDao();
-            Todo todo = new Todo("侧滑删除", false);
-            Todo todo1 = new Todo("拖动排序",false);
-            Todo todo2 = new Todo("点小加号增添任务项",false);
-            Todo todo3 = new Todo("祝你好运",false);
-            dao.insert(todo);
-            dao.insert(todo2);
-            dao.insert(todo3);
-            dao.insert(todo3);
+
         }
 
 

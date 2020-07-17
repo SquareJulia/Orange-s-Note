@@ -3,4 +3,7 @@
     <string name="org_hint_todoItem">项目名称</string>
     <string name="org_hint_search">查找项</string>
     <string name="org_save_todo">保存</string>
+    <string name="org_cancel_todo">取消</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
