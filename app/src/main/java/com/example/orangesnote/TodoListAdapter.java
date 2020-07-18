@@ -50,11 +50,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         if (mTodos != null) {
             Todo current = mTodos.get(position);
             holder.todoItemText.setText(current.getTodoItem());
-            if(current.isDone()){
-                holder.todoItemCheck.setChecked(true);
-            }else{
-                holder.todoItemCheck.setChecked(false);
-            }
+            holder.todoItemCheck.setChecked(current.isDone());
         } else {
             holder.todoItemText.setText("No Content");
             holder.todoItemCheck.setChecked(false);
@@ -66,23 +62,20 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         notifyDataSetChanged();
     }
 
-    /**
-     * 通过接口从数据库删除一项
-     * @param todoItem
-     */
-    private void daoDelete(String todoItem){
-        new Thread(new Runnable() {
+
+
+    private void deleteFromVM(String todoItem){
+        new Thread(new Runnable(){
             @Override
             public void run() {
-                MainActivity.getDao().delete(todoItem);
+                MainActivity.getTodoViewModel().delete(todoItem);
             }
         }).start();
-
     }
 
     @Override
     public void onItemDismiss(int position) {
-        daoDelete(mTodos.get(position).getTodoItem());
+        deleteFromVM(mTodos.get(position).getTodoItem());//从ViewModel里删除
         mTodos.remove(position);
         notifyItemRemoved(position);
     }

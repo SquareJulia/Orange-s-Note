@@ -17,6 +17,7 @@ public interface TodoDao {
     @Query("SELECT * FROM todo_table WHERE todo_item LIKE :todoItem" )
     Todo findByName(String todoItem);
 
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Todo todo);
 

@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.orangesnote.helper.OnStartDragListener;
 import com.example.orangesnote.helper.mItemTouchHelperCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -32,8 +33,7 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerView recyclerView;
     private TodoListAdapter adapter;
-    private TodoViewModel todoViewModel;
-    private static TodoDao dao;
+    private static TodoViewModel todoViewModel;
     private FloatingActionButton fab;
     private DialogFragment mDialog;
     private ItemTouchHelper itemTouchHelper;
@@ -46,41 +46,37 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         initView();
         todoViewModel = new ViewModelProvider(this).get(TodoViewModel.class);
-        dao = TodoRoomDatabase.getDatabase(getApplicationContext()).todoDao();
-        int count = adapter.getItemCount();
-
-
         todoViewModel.getAllTodos().observe(this, new Observer<List<Todo>>() {
             @Override
             public void onChanged(List<Todo> todos) {
                 adapter.setTodos(todos);
             }
-
         });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Todo todo = new Todo( "侧滑删除", false);
+                Todo todo1 = new Todo("拖动排序", false);
+                Todo todo2 = new Todo ("点小加号增添任务项", false);
+                Todo todo3 = new Todo( "任务名称不可以重复哦", false);
+                todoViewModel.insert(todo);
+                todoViewModel.insert(todo1);
+                todoViewModel.insert(todo2);
+                todoViewModel.insert(todo3);
+            }
+        }).start();
 
-        if( adapter.getItemCount() == 0){//TODO 为什么永远执行？
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Todo todo = new Todo("侧滑删除", false);
-                    Todo todo1 = new Todo("拖动排序", false);
-                    Todo todo2 = new Todo("点小加号增添任务项", false);
-                    Todo todo3 = new Todo("任务名称不可以重复哦", false);
-                    dao.insert(todo);
-                    dao.insert(todo1);
-                    dao.insert(todo2);
-                    dao.insert(todo3);
-                }
-            }).start();
-        }
+
     }
-    //用来让recyclerview里面能对livedata进行修改
-    public static TodoDao getDao(){
-        return dao;
+
+    public static TodoViewModel getTodoViewModel() {
+        return todoViewModel;
     }
 
     private void initView() {
         setContentView(R.layout.activity_main);
+
+        //init toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -106,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.delete:
                 //弹出警告框
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
@@ -118,9 +114,11 @@ public class MainActivity extends AppCompatActivity
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                dao.deleteAll();
+                                todoViewModel.deleteAll();
                             }
                         }).start();
+                        Snackbar.make(recyclerView, "已清空", Snackbar.LENGTH_SHORT)
+                                .show();
                     }
                 });
                 dialog.setNegativeButton(R.string.org_cancel_todo, new DialogInterface.OnClickListener() {
@@ -139,9 +137,6 @@ public class MainActivity extends AppCompatActivity
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         itemTouchHelper.startDrag(viewHolder);
     }
-
-
-
 
 
     @Override
@@ -164,17 +159,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        Toast.makeText(getApplicationContext(),"保存成功",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "保存成功", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
-        Toast.makeText(getApplicationContext(),"未保存",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "未保存", Toast.LENGTH_SHORT).show();
     }
 
     /**失败了
-     @Override
-     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+     @Override protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
      super.onActivityResult(requestCode, resultCode, data);
      if (requestCode == NEW_TODO_ACTIVITY_REQUEST_CODE) {
      if (resultCode == RESULT_CANCELED) {
