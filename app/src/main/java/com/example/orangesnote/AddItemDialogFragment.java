@@ -13,18 +13,26 @@ import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.orangesnote.data.Todo;
 
 public class AddItemDialogFragment extends DialogFragment {
 
     private EditText editText;
+    private EditText editPriority;
+    private int priority = 5;
+    private Todo todo=null;
 
     public interface NoticeDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
+
         public void onDialogNegativeClick(DialogFragment dialog);
     }
+
     NoticeDialogListener listener;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -47,7 +55,14 @@ public class AddItemDialogFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_add_item_dialog, null);
         editText = view.findViewById(R.id.edit_new_todo_dialog);
+        editPriority = view.findViewById(R.id.edit_priority);
 
+        MainActivity activity = (MainActivity)getActivity();
+        todo = activity.getTemp();
+        if(todo!=null){
+            editText.setText(todo.getTodoItem());
+            editPriority.setText(Integer.toString(todo.getPriority()));
+        }
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(view)
@@ -56,22 +71,29 @@ public class AddItemDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         String todoItem = editText.getText().toString();
-                        if(TextUtils.isEmpty(todoItem)){
-                            listener.onDialogNegativeClick(AddItemDialogFragment.this);
+                        try {
+                            priority = Integer.parseInt(editPriority.getText().toString());
+                        } catch (NumberFormatException exception) {
                             AddItemDialogFragment.this.getDialog().cancel();
                         }
-                        else{
+                        if (TextUtils.isEmpty(todoItem)) {//todoItem为空，取消保存
+                            listener.onDialogNegativeClick(AddItemDialogFragment.this);
+                            AddItemDialogFragment.this.getDialog().cancel();
+                        } else {
+                            if(priority<1 || priority>10) {//priority超出范围，提示并设置为默认值5
+                                priority = 5;
+                                Toast.makeText(getContext(), R.string.org_priority_warning, Toast.LENGTH_SHORT).show();
+                            }
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    TodoDao dao = TodoRoomDatabase.getDatabase(getActivity()).todoDao();
-                                    Todo todo=new Todo(editText.getText().toString(),false);
-                                    dao.insert(todo);
+                                    TodoViewModel todoViewModel = MainActivity.getTodoViewModel();
+                                    Todo todo = new Todo(editText.getText().toString(), false, priority);
+                                    todoViewModel.insert(todo);
                                 }
                             }).start();
                             listener.onDialogPositiveClick(AddItemDialogFragment.this);
                         }
-
                     }
                 })
                 .setNegativeButton(R.string.org_cancel_todo, new DialogInterface.OnClickListener() {
@@ -81,14 +103,15 @@ public class AddItemDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
-
     }
-
 
 
     //empty constructor
     public AddItemDialogFragment() {
+    }
 
+    public AddItemDialogFragment(Todo todo){
+        this.todo = todo;
     }
 
 }

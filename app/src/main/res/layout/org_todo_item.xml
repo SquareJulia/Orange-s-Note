@@ -27,9 +27,18 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="test"
+            android:textColor="@color/colorOnPrimary"
             android:textSize="25dp"
-            app:layout_constraintLeft_toRightOf="@id/org_checkbox" />
+            app:layout_constraintLeft_toRightOf="@id/org_item_priority" />
 
+        <TextView
+            android:id="@+id/org_item_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="haha"
+            android:textSize="15dp"
+            app:layout_constraintRight_toLeftOf="@id/org_item_text"
+            app:layout_constraintLeft_toRightOf="@id/org_checkbox" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

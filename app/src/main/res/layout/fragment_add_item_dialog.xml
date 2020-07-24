@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="@dimen/big_padding"
+
     tools:context=".AddItemDialogFragment">
 
     <EditText
@@ -11,8 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/org_hint_todoItem"
-        android:layout_margin="@dimen/big_padding"
         android:textSize="@dimen/add_hint_text"
         android:textColor="@color/colorAccent"/>
+
+    <EditText
+        android:id="@+id/edit_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/org_priority_hint"
+        android:textSize="@dimen/add_hint_text"
+        android:inputType="number"
+        android:textColor="@color/colorAccent" />
 
 </LinearLayout>

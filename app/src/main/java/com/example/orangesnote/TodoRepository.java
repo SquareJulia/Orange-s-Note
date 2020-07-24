@@ -4,7 +4,12 @@ package com.example.orangesnote;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.example.orangesnote.data.Todo;
+import com.example.orangesnote.data.TodoDao;
+
+import java.util.ArrayList;
 import java.util.List;
 
 class TodoRepository {
@@ -29,6 +34,12 @@ class TodoRepository {
         });
     }
 
+    void update(Todo todo){
+        TodoRoomDatabase.databaseWriteExecutor.execute(()->{
+            mTodoDao.update(todo);
+        });
+    }
+
 
     void delete(String todoItem) {
         TodoRoomDatabase.databaseWriteExecutor.execute(()->{
@@ -41,4 +52,18 @@ class TodoRepository {
             mTodoDao.deleteAll();
         });
     }
+
+
+    void deleteAllDones(){
+        TodoRoomDatabase.databaseWriteExecutor.execute(()->{
+            mTodoDao.deleteAllDones();
+        });
+    }
+
+    Todo find(String todoItem){
+        return mTodoDao.find(todoItem);
+    }
+
+
+
 }

@@ -3,15 +3,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/search"
+        android:icon="@drawable/baseline_find_in_page_white_18"
+        android:title="Search"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/delete"
         android:icon="@drawable/baseline_delete_white_18"
         android:title="Delete"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/more"
+        android:id="@+id/delete_all_dones"
         android:icon="@drawable/baseline_menu_white_18"
-        android:title="More"
+        android:title="@string/org_delete_all_dones"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/order_by_priority"
+        android:icon="@drawable/baseline_menu_white_18"
+        android:title="@string/org_order_priority"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/order_by_time"
+        android:icon="@drawable/baseline_menu_white_18"
+        android:title="@string/org_order_time"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/order_by_dictionary"
+        android:icon="@drawable/baseline_menu_white_18"
+        android:title="@string/org_order_dictionary"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/order_by_done"
+        android:icon="@drawable/baseline_menu_white_18"
+        android:title="@string/org_order_done"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/save_order"
+        android:title="@string/org_save_order"
+        app:showAsAction="never"/>
+
+
 
 </menu>

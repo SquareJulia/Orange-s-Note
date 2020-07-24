@@ -1,4 +1,4 @@
-package com.example.orangesnote;
+package com.example.orangesnote.data;
 
 import android.content.Context;
 
@@ -8,9 +8,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import com.example.orangesnote.data.Todo;
-import com.example.orangesnote.data.TodoDao;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,7 +35,7 @@ public abstract class TodoRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    private static RoomDatabase.Callback mRoomDatabaseCallback = new RoomDatabase.Callback() {
+    private static Callback mRoomDatabaseCallback = new Callback() {
 
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {

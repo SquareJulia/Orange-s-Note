@@ -1,26 +1,33 @@
 package com.example.orangesnote;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Worker;
 
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.orangesnote.data.Todo;
 import com.example.orangesnote.helper.OnStartDragListener;
 import com.example.orangesnote.helper.mItemTouchHelperCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -29,13 +36,22 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, AddItemDialogFragment.NoticeDialogListener, OnStartDragListener {
+        implements View.OnClickListener, AddItemDialogFragment.NoticeDialogListener, OnStartDragListener{
 
+    private Todo temp;
     private RecyclerView recyclerView;
-    private TodoListAdapter adapter;
+    private static TodoListAdapter adapter;
     private static TodoViewModel todoViewModel;
+    //UI
+    private Toolbar toolbar;
     private FloatingActionButton fab;
+    private Button button_search;
+    private Button button_cancel_search;
+    private EditText searchItem;
+    private LinearLayout searchFrame;
+    //Fragment
     private DialogFragment mDialog;
+
     private ItemTouchHelper itemTouchHelper;
     private static final String TAG = "MainActivity";
 
@@ -55,19 +71,22 @@ public class MainActivity extends AppCompatActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Todo todo = new Todo( "侧滑删除", false);
-                Todo todo1 = new Todo("拖动排序", false);
-                Todo todo2 = new Todo ("点小加号增添任务项", false);
-                Todo todo3 = new Todo( "任务名称不可以重复哦", false);
+                Todo todo = new Todo("侧滑删除", true, 4);
+                Todo todo1 = new Todo("拖动排序", false, 7);
+                Todo todo2 = new Todo("点小加号增添任务项", true, 2);
+                Todo todo3 = new Todo("任务名称不可以重复哦", false, 9);
+                Todo todo5 = new Todo("温馨提示：请先保存排序方式再点确认是否完成", true, 1);
                 todoViewModel.insert(todo);
                 todoViewModel.insert(todo1);
                 todoViewModel.insert(todo2);
                 todoViewModel.insert(todo3);
+                todoViewModel.insert(todo5);
             }
         }).start();
 
 
     }
+
 
     public static TodoViewModel getTodoViewModel() {
         return todoViewModel;
@@ -77,7 +96,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //init toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //init recyclerview
@@ -92,6 +111,12 @@ public class MainActivity extends AppCompatActivity
         //init fab
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(this);
+
+        //init search
+        button_search = findViewById(R.id.search_save);
+        button_cancel_search = findViewById(R.id.search_cancel);
+        searchItem = findViewById(R.id.search_edit);
+        searchFrame = findViewById(R.id.searchFrame);
     }
 
     @Override
@@ -100,9 +125,44 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //用于让ViewModel得到adapter，操作界面
+    public static TodoListAdapter getAdapter() {
+        return adapter;
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.search:
+                Log.d(TAG, "onOptionsItemSelected: search");
+                searchFrame.setVisibility(View.VISIBLE);
+                button_cancel_search.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        searchFrame.setVisibility(View.INVISIBLE);
+                    }
+                });
+                button_search.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String todoItem = searchItem.getText().toString();
+                        if (TextUtils.isEmpty(todoItem)) {
+                            Toast.makeText(getApplicationContext(), "内容为空，已取消", Toast.LENGTH_SHORT).show();
+                        } else {
+                            temp = null;
+                            temp=todoViewModel.find(todoItem);
+                            if (temp == null) {
+                                Toast.makeText(getApplicationContext(), "未找到", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mDialog = new AddItemDialogFragment();
+                                mDialog.show(getSupportFragmentManager(), "AddItemDialogFragment");
+                            }
+                        }
+                        searchFrame.setVisibility(View.INVISIBLE);
+                    }
+                });
+                break;
+
             case R.id.delete:
                 //弹出警告框
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
@@ -124,11 +184,36 @@ public class MainActivity extends AppCompatActivity
                 dialog.setNegativeButton(R.string.org_cancel_todo, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO
                     }
                 });
                 dialog.show();
                 break;
+            case R.id.delete_all_dones:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        todoViewModel.deleteAllDones();
+                    }
+                }).start();
+                Snackbar.make(recyclerView, "已删除所有完成项", Snackbar.LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.order_by_priority:
+                todoViewModel.order(TodoViewModel.OrderBy.priority);
+                break;
+            case R.id.order_by_time:
+                Toast.makeText(getApplicationContext(), "功能还没开发出来", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.order_by_dictionary:
+                todoViewModel.order(TodoViewModel.OrderBy.dict);
+                break;
+            case R.id.order_by_done:
+                todoViewModel.order(TodoViewModel.OrderBy.done);
+                break;
+            case R.id.save_order:
+                adapter.saveOrder();
+                break;
+
         }
         return true;
     }
@@ -138,23 +223,20 @@ public class MainActivity extends AppCompatActivity
         itemTouchHelper.startDrag(viewHolder);
     }
 
+    public Todo getTemp(){
+        return temp;
+    }
+
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab:
-                showAddItemDialog();
+                mDialog = new AddItemDialogFragment();
+                mDialog.show(getSupportFragmentManager(), "AddItemDialogFragment");
                 break;
         }
-    }
-
-
-    /**
-     * Create an instance of the dialog fragment and show it
-     */
-    public void showAddItemDialog() {
-        mDialog = new AddItemDialogFragment();
-        mDialog.show(getSupportFragmentManager(), "AddItemDialogFragment");
     }
 
     @Override
@@ -167,17 +249,5 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(getApplicationContext(), "未保存", Toast.LENGTH_SHORT).show();
     }
 
-    /**失败了
-     @Override protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-     super.onActivityResult(requestCode, resultCode, data);
-     if (requestCode == NEW_TODO_ACTIVITY_REQUEST_CODE) {
-     if (resultCode == RESULT_CANCELED) {
-     Toast.makeText(getApplicationContext(), "内容为空，未保存", Toast.LENGTH_SHORT).show();
-     } else {
-     Todo todo = new Todo(data.getStringExtra("new_todo"), false);
-     todoViewModel.insert(todo);
-     }
-     }
-     }
-     **/
+
 }

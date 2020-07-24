@@ -1,10 +1,19 @@
 <resources>
     <string name="org_app_name">Orange\'s Note</string>
     <string name="org_hint_todoItem">项目名称</string>
-    <string name="org_hint_search">查找项</string>
+    <string name="org_hint_search">请输入项目名称</string>
     <string name="org_save_todo">保存</string>
+    <string name="org_find">查找</string>
     <string name="org_confirm">确认</string>
     <string name="org_cancel_todo">取消</string>
+    <string name="org_priority_hint">设置重要度1~10,默认为5</string>
+    <string name="org_priority_warning">重要度超出范围，已设置为默认值5</string>
+    <string name="org_order_priority">按重要程度排序</string>
+    <string name="org_order_time">按时间排序</string>
+    <string name="org_order_done">按是否完成排序</string>
+    <string name="org_save_order">保存排序方式</string>
+    <string name="org_order_dictionary">按字典序排序</string>
+    <string name="org_delete_all_dones">删除所有已完成的</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
